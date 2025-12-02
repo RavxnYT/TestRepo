@@ -33,7 +33,9 @@ public class RotatingEllipseAnimator extends JPanel implements ActionListener {
     private static final double BASE_WIDTH = 75.0;
     private static final double BASE_HEIGHT = 120.0;
     private static final double SCALE_INCREMENT = 0.12;
-    private static final int MAX_OUTLINES = 10;
+    private static final int MAX_OUTLINES = 6;
+    private static final double ANGLE_STEP = Math.PI / 30.0; // 6 degrees per frame
+    private static final int PRINT_INTERVAL_FRAMES = (int) (FPS * 0.5); // every 0.5 seconds
 
     private final Timer timer;
     private final List<Shape> outlinePrints = new ArrayList<>();
@@ -41,7 +43,7 @@ public class RotatingEllipseAnimator extends JPanel implements ActionListener {
     private double angle = 0.0;
     private double currentScale = 1.0;
     private int completedRevolutions = 0;
-    private final double angleStep = Math.PI / 90.0; // 2 degrees per frame
+    private int framesSincePrint = 0;
     private Shape livePetal;
 
     public RotatingEllipseAnimator() {
@@ -97,15 +99,23 @@ public class RotatingEllipseAnimator extends JPanel implements ActionListener {
             return;
         }
 
-        angle += angleStep;
+        angle += ANGLE_STEP;
+        framesSincePrint++;
+
         Shape nextPetal = buildPetal(angle, currentScale);
-        outlinePrints.add(nextPetal);
         livePetal = nextPetal;
+
+        if (framesSincePrint >= PRINT_INTERVAL_FRAMES) {
+            outlinePrints.add(nextPetal);
+            framesSincePrint = 0;
+        }
 
         if (angle >= Math.PI * 2) {
             angle -= Math.PI * 2;
             currentScale += SCALE_INCREMENT;
             completedRevolutions++;
+            outlinePrints.clear();
+            framesSincePrint = 0;
         }
 
         repaint();
