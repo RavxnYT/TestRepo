@@ -22,7 +22,7 @@ import javax.swing.Timer;
 /**
  * Simple Java2D sketch that draws a petal-like ellipse rotating inside
  * a circular boundary. Every full revolution leaves a permanent outline
- * and the ellipse grows until 10 outlines have been printed.
+ * and the ellipse keeps growing until the configured MAX_OUTLINES have been drawn.
  */
 public class RotatingEllipseAnimator extends JPanel implements ActionListener {
 
@@ -36,6 +36,7 @@ public class RotatingEllipseAnimator extends JPanel implements ActionListener {
     private static final int MAX_OUTLINES = 6;
     private static final double ANGLE_STEP = Math.PI / 30.0; // 6 degrees per frame
     private static final int PRINT_INTERVAL_FRAMES = (int) (FPS * 0.5); // every 0.5 seconds
+    private static final int REPAINT_SKIP_FRAMES = 3; // ~20 visual fps
 
     private final Timer timer;
     private final List<Shape> outlinePrints = new ArrayList<>();
@@ -44,6 +45,7 @@ public class RotatingEllipseAnimator extends JPanel implements ActionListener {
     private double currentScale = 1.0;
     private int completedRevolutions = 0;
     private int framesSincePrint = 0;
+    private int framesSinceRepaint = 0;
     private Shape livePetal;
 
     public RotatingEllipseAnimator() {
@@ -110,15 +112,20 @@ public class RotatingEllipseAnimator extends JPanel implements ActionListener {
             framesSincePrint = 0;
         }
 
+        boolean revolutionFinished = false;
         if (angle >= Math.PI * 2) {
             angle -= Math.PI * 2;
             currentScale += SCALE_INCREMENT;
             completedRevolutions++;
             outlinePrints.clear();
             framesSincePrint = 0;
+            revolutionFinished = true;
         }
 
-        repaint();
+        if (++framesSinceRepaint >= REPAINT_SKIP_FRAMES || revolutionFinished) {
+            framesSinceRepaint = 0;
+            repaint();
+        }
     }
 
     private Shape buildPetal(double rotation, double scale) {
