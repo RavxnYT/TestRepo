@@ -1,9 +1,6 @@
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 import java.awt.geom.*;
-import java.util.Random;
-import java.awt.image.BufferedImage;
 
 /**
  * Simple Java2D scene that sketches a stylised fennec fox (ID ending 0/1).
@@ -29,15 +26,18 @@ public class Skel extends JApplet {
 }
 
 class JApp1Panel extends JPanel {
-    private final TexturePaint furTexture;
-    private final TexturePaint earTexture;
-    private final TexturePaint rockTexture;
+    private static final Color BACKGROUND_TOP = new Color(26, 26, 32);
+    private static final Color BACKGROUND_BOTTOM = new Color(70, 70, 78);
+    private static final Color ROCK_TOP = new Color(120, 120, 132);
+    private static final Color ROCK_BOTTOM = new Color(68, 68, 78);
+    private static final Color FOX_BACK = new Color(184, 134, 92);
+    private static final Color FOX_BELLY = new Color(253, 248, 240);
+    private static final Color FOX_WHITE = new Color(255, 255, 255);
+    private static final Stroke FOX_OUTLINE = new BasicStroke(3f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
     public JApp1Panel() {
         setPreferredSize(new Dimension(640, 480));
-        furTexture = createFurTexture(new Color(246, 226, 196), new Color(222, 194, 153));
-        earTexture = createFurTexture(new Color(255, 220, 228), new Color(235, 200, 210));
-        rockTexture = createRockTexture();
+        setBackground(BACKGROUND_BOTTOM);
     }
 
     @Override
@@ -58,159 +58,149 @@ class JApp1Panel extends JPanel {
     }
 
     private void paintBackground(Graphics2D g2) {
-        GradientPaint dusk = new GradientPaint(0, 0, new Color(22, 22, 22), 0, getHeight(), new Color(54, 54, 54));
+        GradientPaint dusk = new GradientPaint(0, 0, BACKGROUND_TOP, 0, getHeight(), BACKGROUND_BOTTOM);
         g2.setPaint(dusk);
         g2.fillRect(0, 0, getWidth(), getHeight());
 
-        RadialGradientPaint glow = new RadialGradientPaint(new Point2D.Double(420, 120), 220,
+        RadialGradientPaint glow = new RadialGradientPaint(
+                new Point2D.Double(460, 110),
+                220,
                 new float[]{0f, 1f},
-                new Color[]{new Color(255, 255, 255, 60), new Color(255, 255, 255, 0)});
+                new Color[]{new Color(255, 255, 255, 35), new Color(255, 255, 255, 0)});
         g2.setPaint(glow);
-        g2.fill(new Rectangle2D.Double(180, 0, 480, 240));
+        g2.fill(new Rectangle2D.Double(200, 50, 320, 220));
     }
 
     private void paintRock(Graphics2D g2) {
-        Shape rock = new RoundRectangle2D.Double(40, 330, 560, 120, 120, 120);
-        g2.setPaint(rockTexture);
+        Shape rock = new RoundRectangle2D.Double(40, 340, 560, 110, 90, 90);
+        GradientPaint rockPaint = new GradientPaint(0, 340, ROCK_TOP, 0, 450, ROCK_BOTTOM);
+        g2.setPaint(rockPaint);
         g2.fill(rock);
-        g2.setColor(new Color(40, 40, 40));
-        g2.setStroke(new BasicStroke(4f));
+        g2.setColor(new Color(50, 50, 60));
+        g2.setStroke(new BasicStroke(3f));
         g2.draw(rock);
     }
 
     private void paintTail(Graphics2D g2) {
         GeneralPath tail = new GeneralPath();
-        tail.moveTo(110, 320);
-        tail.curveTo(40, 310, 50, 230, 140, 220);
-        tail.curveTo(200, 210, 220, 260, 230, 300);
-        tail.curveTo(240, 340, 210, 360, 150, 360);
+        tail.moveTo(150, 320);
+        tail.curveTo(70, 300, 80, 220, 210, 220);
+        tail.curveTo(260, 230, 265, 290, 230, 340);
+        tail.curveTo(205, 365, 170, 360, 150, 350);
         tail.closePath();
-        g2.setPaint(furTexture);
+        GradientPaint tailPaint = new GradientPaint(150, 220, FOX_BACK, 150, 360, FOX_WHITE);
+        g2.setPaint(tailPaint);
         g2.fill(tail);
-        g2.setColor(new Color(155, 115, 78));
-        g2.setStroke(new BasicStroke(3f));
+        g2.setColor(new Color(120, 85, 60));
+        g2.setStroke(FOX_OUTLINE);
         g2.draw(tail);
-
-        GeneralPath tailTip = new GeneralPath();
-        tailTip.moveTo(90, 305);
-        tailTip.curveTo(50, 280, 55, 240, 128, 230);
-        tailTip.curveTo(160, 230, 180, 250, 190, 280);
-        tailTip.curveTo(150, 306, 130, 320, 100, 322);
-        tailTip.closePath();
-        g2.setPaint(new Color(248, 244, 238));
-        g2.fill(tailTip);
     }
 
     private void paintBody(Graphics2D g2) {
         GeneralPath body = new GeneralPath();
         body.moveTo(220, 230);
-        body.curveTo(160, 250, 160, 330, 220, 360);
+        body.curveTo(160, 260, 165, 340, 230, 360);
         body.curveTo(360, 390, 430, 320, 420, 250);
         body.curveTo(400, 200, 300, 200, 250, 210);
         body.closePath();
-        g2.setPaint(furTexture);
+        g2.setPaint(new GradientPaint(220, 220, FOX_BACK, 220, 390, FOX_BELLY));
         g2.fill(body);
-        g2.setColor(new Color(150, 110, 70));
-        g2.setStroke(new BasicStroke(4f));
+        g2.setColor(new Color(120, 85, 55));
+        g2.setStroke(FOX_OUTLINE);
         g2.draw(body);
+
+        Shape chest = new QuadCurve2D.Double(245, 250, 268, 330, 235, 350);
+        g2.setStroke(new BasicStroke(16f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        g2.setPaint(new GradientPaint(240, 260, FOX_BELLY, 240, 350, FOX_WHITE));
+        g2.draw(chest);
     }
 
     private void paintLegs(Graphics2D g2) {
-        Shape nearLeg = new RoundRectangle2D.Double(250, 320, 30, 90, 25, 25);
-        Shape farLeg = new RoundRectangle2D.Double(285, 320, 28, 88, 25, 25);
-        Shape hindLeg = new RoundRectangle2D.Double(360, 320, 36, 90, 25, 25);
+        Shape nearLeg = new RoundRectangle2D.Double(250, 330, 32, 85, 22, 22);
+        Shape farLeg = new RoundRectangle2D.Double(290, 330, 30, 85, 22, 22);
+        Shape hindLeg = new RoundRectangle2D.Double(360, 330, 38, 88, 24, 24);
 
-        g2.setPaint(new Color(247, 237, 220));
-        g2.fill(nearLeg);
-        g2.fill(farLeg);
-        g2.fill(hindLeg);
-        g2.setColor(new Color(150, 120, 90));
+        fillWithGradient(g2, nearLeg, FOX_BACK, FOX_BELLY);
+        fillWithGradient(g2, farLeg, FOX_BACK, FOX_BELLY);
+        fillWithGradient(g2, hindLeg, FOX_BACK, FOX_BELLY);
+        g2.setColor(new Color(110, 80, 55));
+        g2.setStroke(new BasicStroke(2.4f));
         g2.draw(nearLeg);
         g2.draw(farLeg);
         g2.draw(hindLeg);
-
-        g2.setStroke(new BasicStroke(2f));
-        g2.drawLine(255, 398, 270, 398);
-        g2.drawLine(290, 398, 305, 398);
-        g2.drawLine(365, 398, 386, 398);
     }
 
     private void paintHead(Graphics2D g2) {
         Area head = new Area(new Ellipse2D.Double(290, 190, 120, 90));
-        Area flatten = new Area(new Rectangle2D.Double(310, 230, 90, 90));
+        Area flatten = new Area(new Rectangle2D.Double(320, 235, 90, 60));
         head.subtract(flatten);
-        g2.setPaint(furTexture);
+        g2.setPaint(new GradientPaint(290, 190, FOX_BACK, 290, 270, FOX_BELLY));
         g2.fill(head);
-        g2.setColor(new Color(150, 110, 70));
-        g2.setStroke(new BasicStroke(3f));
+        g2.setColor(new Color(120, 85, 55));
+        g2.setStroke(FOX_OUTLINE);
         g2.draw(head);
 
         GeneralPath earLeft = new GeneralPath();
-        earLeft.moveTo(320, 190);
-        earLeft.curveTo(260, 110, 200, 90, 220, 180);
-        earLeft.curveTo(240, 230, 285, 235, 320, 220);
+        earLeft.moveTo(320, 192);
+        earLeft.curveTo(250, 120, 220, 110, 235, 195);
+        earLeft.curveTo(245, 240, 285, 230, 318, 220);
         earLeft.closePath();
-        g2.setPaint(furTexture);
+        g2.setPaint(new GradientPaint(250, 120, FOX_BACK, 250, 220, FOX_BELLY));
         g2.fill(earLeft);
-        g2.setColor(new Color(140, 105, 70));
+        g2.setColor(new Color(115, 80, 55));
         g2.draw(earLeft);
 
         GeneralPath earLeftInner = new GeneralPath();
-        earLeftInner.moveTo(310, 195);
-        earLeftInner.curveTo(270, 130, 230, 120, 240, 190);
-        earLeftInner.curveTo(250, 220, 285, 220, 305, 212);
+        earLeftInner.moveTo(310, 198);
+        earLeftInner.curveTo(270, 135, 245, 140, 250, 200);
+        earLeftInner.curveTo(258, 220, 290, 220, 302, 212);
         earLeftInner.closePath();
-        g2.setPaint(earTexture);
+        g2.setPaint(new GradientPaint(270, 150, FOX_WHITE, 270, 220, FOX_BELLY));
         g2.fill(earLeftInner);
 
         GeneralPath earRight = new GeneralPath();
-        earRight.moveTo(370, 190);
-        earRight.curveTo(430, 110, 510, 100, 490, 190);
+        earRight.moveTo(370, 192);
+        earRight.curveTo(440, 120, 500, 120, 485, 195);
         earRight.curveTo(470, 240, 410, 240, 380, 215);
         earRight.closePath();
-        g2.setPaint(furTexture);
+        g2.setPaint(new GradientPaint(430, 120, FOX_BACK, 430, 220, FOX_BELLY));
         g2.fill(earRight);
-        g2.setColor(new Color(140, 105, 70));
+        g2.setColor(new Color(115, 80, 55));
         g2.draw(earRight);
 
         GeneralPath earRightInner = new GeneralPath();
-        earRightInner.moveTo(380, 195);
-        earRightInner.curveTo(420, 140, 480, 135, 470, 200);
-        earRightInner.curveTo(458, 220, 410, 220, 392, 212);
+        earRightInner.moveTo(382, 198);
+        earRightInner.curveTo(430, 140, 470, 145, 465, 205);
+        earRightInner.curveTo(455, 225, 410, 220, 392, 212);
         earRightInner.closePath();
-        g2.setPaint(earTexture);
+        g2.setPaint(new GradientPaint(430, 150, FOX_WHITE, 430, 220, FOX_BELLY));
         g2.fill(earRightInner);
     }
 
     private void paintFacialFeatures(Graphics2D g2) {
-        GradientPaint muzzlePaint = new GradientPaint(340, 230, new Color(255, 255, 255), 370, 250,
-                new Color(240, 226, 210));
-        Shape muzzle = new Ellipse2D.Double(330, 230, 70, 50);
-        g2.setPaint(muzzlePaint);
+        Shape muzzle = new Ellipse2D.Double(334, 232, 68, 46);
+        g2.setPaint(new GradientPaint(334, 232, FOX_WHITE, 334, 278, FOX_BELLY));
         g2.fill(muzzle);
-
-        g2.setColor(new Color(120, 90, 60));
-        g2.setStroke(new BasicStroke(2f));
+        g2.setColor(new Color(100, 80, 65));
+        g2.setStroke(new BasicStroke(1.8f));
         g2.draw(muzzle);
 
-        Shape leftEye = new Ellipse2D.Double(330, 220, 18, 12);
-        Shape rightEye = new Ellipse2D.Double(378, 220, 18, 12);
-        g2.setColor(new Color(20, 20, 20));
+        Shape leftEye = new Ellipse2D.Double(333, 220, 18, 12);
+        Shape rightEye = new Ellipse2D.Double(380, 220, 18, 12);
+        g2.setColor(new Color(25, 25, 30));
         g2.fill(leftEye);
         g2.fill(rightEye);
-        g2.setColor(new Color(255, 255, 255, 120));
-        g2.fill(new Ellipse2D.Double(334, 222, 6, 4));
-        g2.fill(new Ellipse2D.Double(382, 222, 6, 4));
+        g2.setColor(new Color(255, 255, 255, 90));
+        g2.fill(new Ellipse2D.Double(336, 222, 5, 4));
+        g2.fill(new Ellipse2D.Double(383, 222, 5, 4));
 
-        Shape nose = new RoundRectangle2D.Double(362, 250, 16, 12, 10, 10);
-        g2.setColor(new Color(40, 40, 40));
+        Shape nose = new RoundRectangle2D.Double(363, 248, 16, 12, 10, 10);
+        g2.setColor(new Color(35, 35, 40));
         g2.fill(nose);
 
-        g2.setStroke(new BasicStroke(1.5f));
-        for (int i = 0; i < 3; i++) {
-            g2.draw(new Line2D.Double(348, 260 + i * 4, 310, 250 + i * 6));
-            g2.draw(new Line2D.Double(392, 260 + i * 4, 430, 250 + i * 6));
-        }
+        g2.setStroke(new BasicStroke(1.2f));
+        g2.draw(new QuadCurve2D.Double(350, 260, 352, 272, 332, 272));
+        g2.draw(new QuadCurve2D.Double(392, 260, 390, 272, 410, 272));
     }
 
     private void paintCaption(Graphics2D g2) {
@@ -222,39 +212,16 @@ class JApp1Panel extends JPanel {
         g2.drawString(caption, (getWidth() - textWidth) / 2, 460);
     }
 
-    private TexturePaint createFurTexture(Color light, Color shadow) {
-        int size = 40;
-        BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = img.createGraphics();
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setColor(light);
-        g2.fillRect(0, 0, size, size);
-        g2.setColor(shadow);
-        for (int i = 0; i < size; i += 6) {
-            g2.setStroke(new BasicStroke(3f));
-            g2.drawLine(0, i, size, i + 4);
-        }
-        g2.dispose();
-        Rectangle anchor = new Rectangle(0, 0, size, size);
-        return new TexturePaint(img, anchor);
-    }
-
-    private TexturePaint createRockTexture() {
-        int size = 60;
-        BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = img.createGraphics();
-        g2.setColor(new Color(95, 95, 95));
-        g2.fillRect(0, 0, size, size);
-        g2.setColor(new Color(70, 70, 70));
-        Random rnd = new Random(42);
-        for (int i = 0; i < 90; i++) {
-            int x = rnd.nextInt(size);
-            int y = rnd.nextInt(size);
-            int r = 3 + rnd.nextInt(5);
-            g2.fillOval(x, y, r, r);
-        }
-        g2.dispose();
-        Rectangle anchor = new Rectangle(0, 0, size, size);
-        return new TexturePaint(img, anchor);
+    private void fillWithGradient(Graphics2D g2, Shape shape, Color top, Color bottom) {
+        Rectangle bounds = shape.getBounds();
+        GradientPaint grad = new GradientPaint(
+                bounds.x,
+                bounds.y,
+                top,
+                bounds.x,
+                bounds.y + bounds.height,
+                bottom);
+        g2.setPaint(grad);
+        g2.fill(shape);
     }
 }
