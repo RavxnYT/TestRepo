@@ -165,41 +165,28 @@ class JApp1Panel extends JPanel {
         g2.setColor(outline);
         g2.draw(head);
         
-        // Face marking - white/cream area
+        // Face marking - simple triangle/diamond shape pointing down
         GeneralPath face = new GeneralPath();
-        face.moveTo(x, y + 48);  // chin
-        face.curveTo(x - 25, y + 35, x - 35, y + 5, x - 30, y - 15);
-        face.lineTo(x - 15, y - 5);
-        face.curveTo(x - 5, y + 5, x + 5, y + 5, x + 15, y - 5);
-        face.lineTo(x + 30, y - 15);
-        face.curveTo(x + 35, y + 5, x + 25, y + 35, x, y + 48);
+        face.moveTo(x, y + 45);           // chin point
+        face.lineTo(x - 40, y - 10);      // left cheek
+        face.lineTo(x, y - 5);            // top center
+        face.lineTo(x + 40, y - 10);      // right cheek
         face.closePath();
         
         g2.setColor(cream);
         g2.fill(face);
-        g2.setColor(outline);
-        g2.draw(face);
         
-        // Eyes - simple black dots
+        // Eyes - simple black ovals
         g2.setColor(black);
-        g2.fillOval(x - 22, y - 5, 10, 12);
-        g2.fillOval(x + 12, y - 5, 10, 12);
+        g2.fillOval(x - 25, y - 5, 8, 10);
+        g2.fillOval(x + 17, y - 5, 8, 10);
         
-        // Eye shine
-        g2.setColor(Color.WHITE);
-        g2.fillOval(x - 20, y - 3, 4, 4);
-        g2.fillOval(x + 14, y - 3, 4, 4);
+        // Nose - small oval
+        g2.fillOval(x - 4, y + 18, 8, 6);
         
-        // Nose
-        g2.setColor(black);
-        int[] noseX = {x, x - 6, x + 6};
-        int[] noseY = {y + 22, y + 15, y + 15};
-        Polygon nose = new Polygon(noseX, noseY, 3);
-        g2.fill(nose);
-        
-        // Mouth - simple curved line
+        // Mouth - simple smile
         g2.setStroke(new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        QuadCurve2D mouth = new QuadCurve2D.Double(x - 8, y + 30, x, y + 36, x + 8, y + 30);
+        QuadCurve2D mouth = new QuadCurve2D.Double(x - 6, y + 28, x, y + 33, x + 6, y + 28);
         g2.draw(mouth);
         
         // Reset stroke
