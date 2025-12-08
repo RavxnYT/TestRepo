@@ -165,17 +165,6 @@ class JApp1Panel extends JPanel {
         g2.setColor(outline);
         g2.draw(head);
         
-        // Face marking - simple triangle/diamond shape pointing down
-        GeneralPath face = new GeneralPath();
-        face.moveTo(x, y + 45);           // chin point
-        face.lineTo(x - 40, y - 10);      // left cheek
-        face.lineTo(x, y - 5);            // top center
-        face.lineTo(x + 40, y - 10);      // right cheek
-        face.closePath();
-        
-        g2.setColor(cream);
-        g2.fill(face);
-        
         // Eyes - simple black ovals
         g2.setColor(black);
         g2.fillOval(x - 25, y - 5, 8, 10);
